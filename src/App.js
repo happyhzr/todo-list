@@ -15,9 +15,10 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    axios.get("http://localhost:8000/items")
-      .then((res) => {
-        this.setState({ todoItems: res.data })
+    fetch("http://localhost:8000/items")
+      .then(resp => resp.json())
+      .then(json => {
+        this.setState({ todoItems: json })
       })
   }
 
@@ -28,20 +29,33 @@ export default class App extends React.Component {
       isDone: false,
       isDelete: false,
     }
-    axios.post("http://localhost:8000/items", { todoItem: newTodoItem })
-      .then((res) => {
-        console.log(res.data)
+    fetch("http://localhost:8000/items", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: JSON.stringify(newTodoItem)
+    })
+      .then(resp => resp.json())
+      .then(json => {
         this.setState({
-          todoItems: res.data
+          todoItems: json,
         })
       })
   }
 
   deleteTodoItem(item) {
-    axios.delete("http://localhost:8000/items", { data: { id: item.id } })
-      .then((res) => {
+    fetch("http://localhost:8000/items", {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json;charset=utf-8'
+      },
+      body: JSON.stringify({id:item.id})
+    })
+      .then(resp => resp.json())
+      .then(json => {
         this.setState({
-          todoItems: res.data
+          todoItems: json,
         })
       })
   }
