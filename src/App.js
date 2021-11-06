@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 
 import TodoForm from "./components/TodoForm";
 import TodoList from "./components/TodoList";
@@ -7,12 +8,17 @@ export default class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      todoItems: [
-        { id: 0, value: "React", isDone: false, isSelete: false },
-      ]
+      todoItems: []
     }
     this.addTodoItem = this.addTodoItem.bind(this)
     this.deleteTodoItem = this.deleteTodoItem.bind(this)
+  }
+
+  componentDidMount() {
+    axios.get("http://localhost:8000/items")
+      .then((res) => {
+        this.setState({ todoItems: res.data })
+      })
   }
 
   addTodoItem(todoItemValue) {
@@ -22,16 +28,22 @@ export default class App extends React.Component {
       isDone: false,
       isDelete: false,
     }
-    this.setState({
-      todoItems: [...this.state.todoItems, newTodoItem]
-    })
+    axios.post("http://localhost:8000/items", { todoItem: newTodoItem })
+      .then((res) => {
+        console.log(res.data)
+        this.setState({
+          todoItems: res.data
+        })
+      })
   }
 
   deleteTodoItem(item) {
-    item.isDelete = true
-    this.setState({
-      todoItems: [...this.state.todoItems, item]
-    })
+    axios.delete("http://localhost:8000/items", { data: { id: item.id } })
+      .then((res) => {
+        this.setState({
+          todoItems: res.data
+        })
+      })
   }
 
   render() {
